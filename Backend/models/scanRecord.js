@@ -19,7 +19,10 @@ const ScanRecordSchema = new mongoose.Schema(
       isSpam: { type: Boolean },
       category: { type: String }, // e.g., 'phishing', 'robocall'
       redFlags: [String], // e.g., ['OTP', 'gift card']
-      explanation: { type: String },
+      explanation: [String], // Point-wise explanation from AI
+      sentiment: { type: String }, // e.g., 'aggressive', 'friendly', 'neutral'
+      recommendedActions: [String], // e.g., ['Block number', 'Report to authorities']
+      similarityScore: { type: Number, min: 0, max: 100 }, // Similarity to known scam patterns
     },
   },
   { timestamps: true }
