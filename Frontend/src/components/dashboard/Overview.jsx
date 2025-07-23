@@ -8,7 +8,7 @@ import {
   FileText,
 } from "lucide-react";
 
-export default function Overview() {
+export default function Overview({ onSectionChange }) {
   const stats = [
     {
       label: "Total Scans",
@@ -142,7 +142,10 @@ export default function Overview() {
           Quick Actions
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <button className="flex items-center space-x-3 p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+          <button
+            onClick={() => onSectionChange && onSectionChange("new-scan")}
+            className="flex items-center space-x-3 p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+          >
             <div className="bg-teal-100 dark:bg-teal-900/30 p-2 rounded-lg">
               <FileText className="h-5 w-5 text-teal-600" />
             </div>
@@ -150,7 +153,10 @@ export default function Overview() {
               New Scan
             </span>
           </button>
-          <button className="flex items-center space-x-3 p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+          <button
+            onClick={() => onSectionChange && onSectionChange("analytics")}
+            className="flex items-center space-x-3 p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+          >
             <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-lg">
               <TrendingUp className="h-5 w-5 text-blue-600" />
             </div>
@@ -183,11 +189,11 @@ export default function Overview() {
               <div className="flex items-center space-x-4">
                 <div className="flex-shrink-0">
                   <div
-                    className={`p-2 rounded-lg ${
+                    className={`${
                       item.type === "call"
                         ? "bg-blue-100 dark:bg-blue-900/30"
                         : "bg-green-100 dark:bg-green-900/30"
-                    }`}
+                    } p-2 rounded-lg`}
                   >
                     <FileText
                       className={`h-4 w-4 ${

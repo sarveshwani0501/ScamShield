@@ -1,8 +1,13 @@
 import React, { useState } from "react";
 import { Eye, EyeOff, Loader2, Shield, Check, X } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
+import { useTheme } from "../../contexts/ThemeContext";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function SignupForm({ onPageChange }) {
+  const navigate = useNavigate();
+  const { theme } = useTheme();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -31,6 +36,9 @@ export default function SignupForm({ onPageChange }) {
     },
   ];
 
+  const handleGoogleSignup = () => {
+    window.location.href = "http://localhost:5000/api/auth/google";
+  };
   const passwordsMatch =
     formData.password &&
     formData.confirmPassword &&
@@ -51,14 +59,45 @@ export default function SignupForm({ onPageChange }) {
   };
 
   const handleSubmit = async (e) => {
+    console.log("Button clicked");
     e.preventDefault();
+
     if (!canSubmit) return;
 
+    if (!formData.name || !formData.email || !formData.password) {
+      alert("Please fill in all fields.");
+      return;
+    }
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match.");
+      return;
+    }
+
     try {
-      await signup(formData.name, formData.email, formData.password);
-      onPageChange("dashboard");
+      const response = await axios.post(
+        "http://localhost:5000/api/auth/signup",
+        {
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }
+      );
+
+      if (response.data.error) {
+        alert(response.data.error);
+        return;
+      }
+
+      console.log("Signup successful:", response.data);
+      alert("Signup successful! You can now log in.");
+      navigate("/login");
     } catch (error) {
       console.error("Signup failed:", error);
+      if (error.response?.data?.error) {
+        alert(error.response.data.error);
+      } else {
+        alert("Signup failed. Please try again.");
+      }
     }
   };
 
@@ -291,7 +330,10 @@ export default function SignupForm({ onPageChange }) {
             </div>
 
             <div className="mt-6 grid grid-cols-2 gap-3">
-              <button className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-sm font-medium text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600">
+              <button
+                onClick={handleGoogleSignup}
+                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-sm font-medium text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600"
+              >
                 <svg className="h-5 w-5" viewBox="0 0 24 24">
                   <path
                     fill="currentColor"

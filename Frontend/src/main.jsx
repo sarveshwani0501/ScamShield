@@ -1,10 +1,51 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.jsx'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
+import App from "./App.jsx";
+import {
+  createBrowserRouter,
+  createRoutesFromElements,
+  Route,
+  RouterProvider,
+} from "react-router-dom";
 
-createRoot(document.getElementById('root')).render(
+import Layout from "./components/Layout.jsx";
+import HomePage from "./components/pages/HomePage.jsx";
+import DashboardPage from "./components/pages/DashboardPage.jsx";
+import LoginForm from "./components/auth/LoginForm.jsx";
+import EducationCenter from "./components/EducationCenter.jsx";
+import SignupForm from "./components/auth/SignupForm.jsx";
+import About from "./components/pages/About.jsx";
+import ContactUs from "./components/pages/ContactUs.jsx";
+import { ThemeProvider } from "./contexts/ThemeContext";
+import { AuthProvider } from "./contexts/AuthContext";
+import checkUserAuthLoader from "./AuthLoader.js";
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <>
+      <Route path="/" element={<Layout />}>
+        <Route path="" element={<HomePage />} />
+        <Route path="/education-center" element={<EducationCenter />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<ContactUs />} />
+        <Route
+          path="/dashboard"
+          element={<DashboardPage />}
+          loader={checkUserAuthLoader}
+        />
+        <Route path="/login" element={<LoginForm />} />
+        <Route path="/signup" element={<SignupForm />} />
+      </Route>
+    </>
+  )
+);
+
+createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <App />
-  </StrictMode>,
-)
+    <ThemeProvider>
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
+    </ThemeProvider>
+  </StrictMode>
+);

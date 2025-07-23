@@ -2,15 +2,36 @@ const express = require("express");
 
 const router = express.Router();
 
-router.post("/signup");
+const {
+  handleUserSignUp,
+  handleUserLogin,
+  handleUserLogout,
+  handleSignUpUserViaGoogleAuth,
+} = require("../controllers/authController.js");
 
-router.post("/login");
+const {checkForAuthentication} = require("../middlewares/Authentication.js");
 
-router.get("/logout");
+const passport = require("passport");
 
-router.post("/:id/change-password");
+require("../Config/passport.js")(passport);
 
-router.post("/:id/reset-password");
+router.post("/signup", handleUserSignUp);
 
+router.post("/login", handleUserLogin);
+
+router.get("/logout", checkForAuthentication("token"), handleUserLogout);
+
+// Start Google OAuth
+router.get(
+  "/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+// Callback after Google authentication
+router.get(
+  "/google/callback",
+  passport.authenticate("google", { session: false }),
+  handleSignUpUserViaGoogleAuth
+);
 
 module.exports = router;

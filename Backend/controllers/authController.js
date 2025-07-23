@@ -1,109 +1,133 @@
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
-const User = require("../models/user");
-const uploadToCloudinary = require("../utils/cloudinary");
+const user = require("../models/user");
+const {createTokenForUser} = require("../Services/Authentication")
+async function handleUserSignUp(req, res) {
+  console.log("Request to sign up received!!");
 
-function generateToken(user) {
-  const payload = {
-    name: user.name,
-    id: user._id,
-    email: user.email,
-    //profilePic: user.profilePic,
-  };
-  const token = jwt.sign(payload, process.env.JWT_SECRET);
+  if (!req.body || !req.body.name || !req.body.email || !req.body.password) {
+    console.log({
+      msg: "failed",
+      error: "Field missing or incorrect in signup form.",
+    });
 
-  return token;
-}
+    return res
+      .status(400)
+      .json({
+        msg: "failed",
+        error: "Field missing or incorrect in signup form.",
+      });
+  }
 
-async function signUp(req, res) {
+  const { name, email, password } = req.body;
+
   try {
-    const body = req.body;
-    const { name, email, password } = body;
+    const existingUser = await user.findOne({ email: email });
 
-    const findUserName = await User.findOne({ name });
-    if (findUserName) {
-      return res.status(400).json({ message: "Username already exits" });
-    }
-    const findEmail = await User.findOne({ email });
-    if (findEmail) {
-      return res.status(400).json({ message: "Email Id already exists" });
+    if (existingUser) {
+      return res
+        .status(400)
+        .json({ msg: "failed", error: "Email already registered." });
     }
 
-    const user = await User.create({
+    // Create new User
+    const created = await user.create({
       name,
       email,
       password,
     });
 
-    return res
-      .status(201)
-      .json({ message: "User data added successfully", user: user });
+    if (!created) {
+      console.log({ msg: "failed", error: "Error while creating user." });
+      return res
+        .status(500)
+        .json({ msg: "failed", error: "Error while creating user." });
+    }
+    console.log(created);
+
+    console.log("User signed up successfully!!");
+    return res.status(201).json({ msg: "success" });
   } catch (error) {
-    console.log("Sign Up error: ", error);
-    return res.status(500).json({ message: error.message });
+    console.error("Error in signup:", error);
+    return res.status(500).json({ msg: "failed", error: "Server error." });
   }
 }
 
-const ONE_DAY = 24 * 60 * 60 * 1000;
-
-async function login(req, res) {
-  const { userName, password } = req.body;
-
-  const user = await User.findOne({ userName });
-  if (!user) {
-    return res.status(400).json({ message: "Invalid Credentials" });
-  }
-
-  const isMatch = await bcrypt.compare(password, user.password);
-
-  if (!isMatch) {
-    return res.status(400).json({ message: "Invalid Credentials" });
-  }
-
-  const token = generateToken(user);
-  console.log("Cookie in token ", token);
-  res.cookie("token", token, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: false,
-    maxAge: ONE_DAY,
-  });
-
-  return res.status(200).json({
-    message: "User login successful",
-    user: user,
-    token,
-  });
-}
-
-async function logout(req, res) {
-  res.clearCookie("token");
-  return res.status(200).json({ message: "User log out successful" });
-}
-
-async function getUserDetails(req, res) {
+async function handleUserLogout(req, res) {
   try {
-    const { id } = req.params;
-    const user = await User.findById(id);
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "Lax",
+    });
+    console.log("User logged out successfully");
+
+    return res.status(200).json({ msg: "success" });
+  } catch (error) {
+    console.error("Error during logout:", error);
+    return res.status(500).json({ msg: "failed", error: "Server error." });
+  }
+}
+
+const handleUserLogin = async (req, res) => {
+  if (!req.body || !req.body.email || !req.body.password) {
+    return res.status(400).json({ msg: "Invalid fields Entered!!!" });
+  }
+
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(404).json({ msg: "Invalid fields Entered!!!" });
+  }
+
+  const User = await user.matchedUserAndGenerateToken(email, password);
+  console.log(User);
+
+  if (User.error) {
+    return res.status(500).json({ error: "Sign In failed!!" });
+  }
+
+  console.log("Token of user: ", User.token);
+  const token = User.token;
+  return res
+    .status(200)
+    .cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "Lax",
+      maxAge: 24 * 60 * 60 * 1000,
+    })
+    .json({ msg: "Sign In succedded", user: User });
+};
+
+
+async function handleSignUpUserViaGoogleAuth(req, res) {
+  try {
+    const user = req.user; // Comes from Passport Google OAuth strategy
 
     if (!user) {
-      return res.status(400).json({ error: "User Details not found" });
+      return res.redirect("http://localhost:5173/login?error=oauth_failed");
     }
-    user.password = "";
-    return res.status(200).json({ msg: "Profile Information provided", user });
-  } catch (error) {
-    return res.status(500).json({
-      error: error,
+
+    const token = createTokenForUser(user);
+
+    // Set the token as an httpOnly cookie
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false, // Set to true in production with HTTPS
+      sameSite: "Lax",
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
     });
+
+    // Redirect to frontend dashboard or callback page
+    return res.redirect("http://localhost:5173/dashboard");
+  } catch (err) {
+    console.error("OAuth signup error:", err);
+    return res.redirect("http://localhost:5173/login?error=oauth_failed");
   }
 }
-
-
 
 
 module.exports = {
-  signUp,
-  login,
-  logout,
-  getUserDetails,
+  handleUserSignUp,
+  handleUserLogout,
+  handleUserLogin,
+  handleSignUpUserViaGoogleAuth
 };

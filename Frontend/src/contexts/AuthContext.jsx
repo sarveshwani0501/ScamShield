@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-
+import checkUserAuthLoader from "../AuthLoader";
 const AuthContext = createContext(undefined);
 
 export function AuthProvider({ children }) {
@@ -7,50 +7,22 @@ export function AuthProvider({ children }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem("user");
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
+    async function fetchUser() {
+      try {
+        const response = await checkUserAuthLoader();
+        console.log(response.userid);
+        setUser(response.userid);
+        console.log("User authenticated");
+      } catch (error) {
+        console.log("User not authenticated");
+      } finally {
+        setIsLoading(false);
+      }
     }
-    setIsLoading(false);
+    fetchUser();
   }, []);
-
-  const login = async (email, password) => {
-    setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    const mockUser = {
-      id: "1",
-      name: "John Doe",
-      email,
-      avatar:
-        "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=2",
-    };
-    setUser(mockUser);
-    localStorage.setItem("user", JSON.stringify(mockUser));
-    setIsLoading(false);
-  };
-
-  const signup = async (name, email, password) => {
-    setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    const mockUser = {
-      id: "1",
-      name,
-      email,
-      avatar:
-        "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=2",
-    };
-    setUser(mockUser);
-    localStorage.setItem("user", JSON.stringify(mockUser));
-    setIsLoading(false);
-  };
-
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("user");
-  };
-
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout, isLoading }}>
+    <AuthContext.Provider value={{ isLoading, user, setUser }}>
       {children}
     </AuthContext.Provider>
   );
