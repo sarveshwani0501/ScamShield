@@ -5,34 +5,43 @@ export default function TestimonialsCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const testimonials = [
-    {
-      name: "Sarah Johnson",
-      role: "Small Business Owner",
-      avatar:
-        "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=2",
-      content:
-        "SpamGuard helped me identify a sophisticated phishing email that could have cost my business thousands. The analysis was incredibly detailed and easy to understand.",
-      rating: 5,
-    },
-    {
-      name: "Michael Chen",
-      role: "Retiree",
-      avatar:
-        "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=2",
-      content:
-        "As someone who receives many suspicious calls, this tool has been a game-changer. I can now verify if calls are legitimate before taking any action.",
-      rating: 5,
-    },
-    {
-      name: "Emily Rodriguez",
-      role: "Marketing Manager",
-      avatar:
-        "https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=2",
-      content:
-        "The speed and accuracy of the analysis is impressive. I use it to protect both my personal and work communications. Highly recommended!",
-      rating: 5,
-    },
-  ];
+  {
+    name: "Priya Sharma",
+    role: "Small Business Owner",
+    avatar:
+      "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=2",
+    content:
+      "ScamRadar helped me identify a sophisticated phishing email that could have cost my business thousands. The analysis was incredibly detailed and easy to understand.",
+    rating: 5,
+  },
+  {
+    name: "Ravi Kumar",
+    role: "Retiree",
+    avatar:
+      "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=2",
+    content:
+      "As someone who receives many suspicious calls, this tool has been a game-changer. I can now verify if calls are legitimate before taking any action.",
+    rating: 5,
+  },
+  {
+    name: "Neha Singh",
+    role: "Marketing Manager",
+    avatar:
+      "https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=2",
+    content:
+      "The speed and accuracy of the analysis is impressive. I use it to protect both my personal and work communications. Highly recommended!",
+    rating: 5,
+  },
+  {
+    name: "Arjun Patel",
+    role: "Software Engineer",
+    avatar:
+      "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=2",
+    content:
+      "This platform's AI accuracy for detecting spam calls and emails is outstanding. It has saved me a lot of time and stress.",
+    rating: 5,
+  },
+];
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -52,14 +61,14 @@ export default function TestimonialsCarousel() {
   };
 
   return (
-    <section className="py-20 bg-white dark:bg-gray-900">
+    <section className="py-20 bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
             Trusted by Thousands
           </h2>
           <p className="text-lg text-gray-600 dark:text-gray-400">
-            See what our users say about their experience with SpamGuard
+            See what our users say about their experience with ScamRadar
           </p>
         </div>
 

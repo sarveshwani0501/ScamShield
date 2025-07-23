@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import { Menu } from "lucide-react";
-import { useTheme } from "../../contexts/ThemeContext";
+import { useTheme } from "../../hooks/useTheme";
 import Sidebar from "../dashboard/Sidebar";
 import Overview from "../dashboard/Overview";
 import NewScan from "../dashboard/NewScan";
 import ScanHistory from "../dashboard/ScanHistory";
 import Analytics from "../dashboard/Analytics";
 import EducationCenter from "../EducationCenter";
-import Settings from "../Settings";
 import ScanResultsModal from "../ScanResultsModal";
 import axios from "axios";
+import { API_ENDPOINTS } from "../../config/api.js";
+import toast, { Toaster } from 'react-hot-toast';
+
 export default function DashboardPage({ onPageChange }) {
   const { theme } = useTheme();
   const [activeSection, setActiveSection] = useState("new-scan");
@@ -44,12 +46,15 @@ export default function DashboardPage({ onPageChange }) {
     try {
       setScanModalOpen(true);
       setIsAnalyzing(true);
+      
+      const loadingToast = toast.loading(`Analyzing ${type}... This may take a moment.`);
+      
       if (type === "call") {
         const formData = new FormData();
         formData.append("audio", content);
         console.log(content);
         const response = await axios.post(
-          "http://localhost:5000/api/spam-detection/analyze-call",
+          API_ENDPOINTS.SPAM_DETECTION.ANALYZE_CALL,
           formData,
           {
             withCredentials: true,
@@ -62,16 +67,20 @@ export default function DashboardPage({ onPageChange }) {
         console.log("Datafregvr:", response.data.data);
         if (!response.data.success) {
           console.error("Error");
-          alert("error");
+          toast.error("Analysis failed. Please try again.", { id: loadingToast });
+          setIsAnalyzing(false);
+          setScanModalOpen(false);
+          return;
         } else {
           setScanContent(response?.data?.data);
+          toast.success("Analysis completed successfully!", { id: loadingToast });
         }
       } else {
         const formData = new FormData();
         formData.append("email", content);
         console.log(content);
         const response = await axios.post(
-          "http://localhost:5000/api/spam-detection/analyze-email",
+          API_ENDPOINTS.SPAM_DETECTION.ANALYZE_EMAIL,
           formData,
           {
             withCredentials: true,
@@ -82,18 +91,22 @@ export default function DashboardPage({ onPageChange }) {
         );
         if (!response.data.success) {
           console.error("Error");
-          alert("error");
+          toast.error("Analysis failed. Please try again.", { id: loadingToast });
+          setIsAnalyzing(false);
+          setScanModalOpen(false);
+          return;
         } else {
           setScanContent(response?.data?.data);
+          toast.success("Analysis completed successfully!", { id: loadingToast });
         }
       }
       setScanType(type);
       setScanLanguage(language);
-      //response.data.analysis;
     } catch (error) {
-      const message = error?.response?.data?.message;
-      console;
-      alert("Failed");
+      const message = error?.response?.data?.message || "Analysis failed. Please try again.";
+      toast.error(message);
+      setIsAnalyzing(false);
+      setScanModalOpen(false);
     }
   };
 
@@ -115,10 +128,8 @@ export default function DashboardPage({ onPageChange }) {
         return <Analytics />;
       case "education":
         return <EducationCenter />;
-      case "settings":
-        return <Settings />;
       default:
-        return <Overview />;
+        return <Overview onSectionChange={setActiveSection} />;
     }
   };
 
@@ -157,6 +168,31 @@ export default function DashboardPage({ onPageChange }) {
         content={scanContent}
         type={scanType}
         language={scanLanguage}
+      />
+      
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: 'var(--toast-bg)',
+            color: 'var(--toast-color)',
+            border: '1px solid var(--toast-border)',
+          },
+          className: '',
+          success: {
+            iconTheme: {
+              primary: '#10b981',
+              secondary: 'white',
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: 'white',
+            },
+          },
+        }}
       />
     </div>
   );

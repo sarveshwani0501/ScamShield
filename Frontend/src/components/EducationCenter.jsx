@@ -9,6 +9,8 @@ import {
   Clock,
   User,
 } from "lucide-react";
+import { Link } from "react-router-dom";
+import { articlesData } from "../data/articlesData.js";
 
 export default function EducationCenter() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -22,79 +24,7 @@ export default function EducationCenter() {
     { id: "otp-frauds", label: "OTP Frauds", icon: Key },
   ];
 
-  const articles = [
-    {
-      id: 1,
-      title: "How to Identify Phishing Emails: A Complete Guide",
-      excerpt:
-        "Learn the key warning signs of phishing emails and protect yourself from cybercriminals.",
-      category: "phishing",
-      readTime: "5 min read",
-      author: "Security Team",
-      image:
-        "https://images.pexels.com/photos/4348401/pexels-photo-4348401.jpeg?auto=compress&cs=tinysrgb&w=400",
-      featured: true,
-    },
-    {
-      id: 2,
-      title: "Robocall Red Flags: What to Listen For",
-      excerpt:
-        "Understand common tactics used in spam calls and how to protect yourself.",
-      category: "robocalls",
-      readTime: "3 min read",
-      author: "Dr. Sarah Wilson",
-      image:
-        "https://images.pexels.com/photos/5077045/pexels-photo-5077045.jpeg?auto=compress&cs=tinysrgb&w=400",
-      featured: false,
-    },
-    {
-      id: 3,
-      title: "Job Scam Warning Signs: Too Good to Be True",
-      excerpt: "Recognize fraudulent job offers and avoid employment scams.",
-      category: "job-scams",
-      readTime: "4 min read",
-      author: "Michael Chen",
-      image:
-        "https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=400",
-      featured: false,
-    },
-    {
-      id: 4,
-      title: "OTP Fraud: Never Share Your One-Time Passwords",
-      excerpt:
-        "Understanding OTP fraud tactics and how to keep your accounts secure.",
-      category: "otp-frauds",
-      readTime: "6 min read",
-      author: "Security Team",
-      image:
-        "https://images.pexels.com/photos/4386431/pexels-photo-4386431.jpeg?auto=compress&cs=tinysrgb&w=400",
-      featured: true,
-    },
-    {
-      id: 5,
-      title: "Social Engineering: The Human Side of Cybersecurity",
-      excerpt:
-        "How criminals manipulate people to gain access to sensitive information.",
-      category: "phishing",
-      readTime: "7 min read",
-      author: "Dr. Sarah Wilson",
-      image:
-        "https://images.pexels.com/photos/5380642/pexels-photo-5380642.jpeg?auto=compress&cs=tinysrgb&w=400",
-      featured: false,
-    },
-    {
-      id: 6,
-      title: "Voice Phishing (Vishing): Protecting Yourself Over the Phone",
-      excerpt:
-        "Learn about voice phishing attacks and how to stay safe during phone conversations.",
-      category: "robocalls",
-      readTime: "5 min read",
-      author: "Michael Chen",
-      image:
-        "https://images.pexels.com/photos/4348081/pexels-photo-4348081.jpeg?auto=compress&cs=tinysrgb&w=400",
-      featured: false,
-    },
-  ];
+  const articles = articlesData;
 
   const filteredArticles = articles.filter((article) => {
     const matchesSearch =
@@ -113,7 +43,7 @@ export default function EducationCenter() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
@@ -167,8 +97,9 @@ export default function EducationCenter() {
             </h2>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {featuredArticles.map((article) => (
-                <div
+                <Link
                   key={article.id}
+                  to={`/education-center/article/${article.id}`}
                   className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow"
                 >
                   <img
@@ -208,7 +139,7 @@ export default function EducationCenter() {
                       </button>
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </div>
@@ -221,8 +152,9 @@ export default function EducationCenter() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {regularArticles.map((article) => (
-              <div
+              <Link
                 key={article.id}
+                to={`/education-center/article/${article.id}`}
                 className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow"
               >
                 <img
@@ -258,7 +190,7 @@ export default function EducationCenter() {
                     </button>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

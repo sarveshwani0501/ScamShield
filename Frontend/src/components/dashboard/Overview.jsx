@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Shield,
   AlertTriangle,
@@ -7,69 +7,126 @@ import {
   Calendar,
   FileText,
 } from "lucide-react";
+import { API_ENDPOINTS } from "../../config/api.js";
 
 export default function Overview({ onSectionChange }) {
-  const stats = [
+  const [stats, setStats] = useState([
     {
       label: "Total Scans",
-      value: "247",
-      change: "+12%",
+      value: "0",
+      change: "+0%",
       changeType: "positive",
       icon: FileText,
       color: "blue",
     },
     {
       label: "Spam Detected",
-      value: "42",
-      change: "+3%",
+      value: "0",
+      change: "+0%",
       changeType: "negative",
       icon: AlertTriangle,
       color: "red",
     },
     {
       label: "Safe Content",
-      value: "205",
-      change: "+9%",
+      value: "0",
+      change: "+0%",
       changeType: "positive",
       icon: CheckCircle,
       color: "green",
     },
     {
       label: "Success Rate",
-      value: "96.8%",
-      change: "+1.2%",
+      value: "0%",
+      change: "+0%",
       changeType: "positive",
       icon: Shield,
       color: "teal",
     },
-  ];
+  ]);
 
-  const recentActivity = [
-    {
-      id: 1,
-      type: "call",
-      filename: "suspicious_call_recording.mp3",
-      score: 8.2,
-      status: "spam",
-      timestamp: "2 hours ago",
-    },
-    {
-      id: 2,
-      type: "email",
-      filename: "email_screenshot.png",
-      score: 2.1,
-      status: "safe",
-      timestamp: "5 hours ago",
-    },
-    {
-      id: 3,
-      type: "call",
-      filename: "unknown_caller.wav",
-      score: 6.7,
-      status: "suspicious",
-      timestamp: "1 day ago",
-    },
-  ];
+  const [recentActivity, setRecentActivity] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch analytics data
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setLoading(false);
+          return;
+        }
+
+        const response = await fetch(API_ENDPOINTS.SPAM_DETECTION.GET_SPAM_COUNT, {
+          method: 'GET',
+          credentials: 'include', // Include cookies in the request
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            // Update stats with real data
+            setStats([
+              {
+                label: "Total Scans",
+                value: data.data.stats.totalScans.toString(),
+                change: "+12%", // You can calculate this based on historical data later
+                changeType: "positive",
+                icon: FileText,
+                color: "blue",
+              },
+              {
+                label: "Spam Detected",
+                value: data.data.stats.spamDetected.toString(),
+                change: "+3%", // You can calculate this based on historical data later
+                changeType: "negative",
+                icon: AlertTriangle,
+                color: "red",
+              },
+              {
+                label: "Safe Content",
+                value: data.data.stats.safeContent.toString(),
+                change: "+9%", // You can calculate this based on historical data later
+                changeType: "positive",
+                icon: CheckCircle,
+                color: "green",
+              },
+              {
+                label: "Success Rate",
+                value: data.data.stats.successRate,
+                change: "+1.2%", // You can calculate this based on historical data later
+                changeType: "positive",
+                icon: Shield,
+                color: "teal",
+              },
+            ]);
+
+            // Update recent activity with real data
+            setRecentActivity(data.data.recentActivity);
+          }
+        } else {
+          console.error('Failed to fetch analytics data:', response.status);
+        }
+      } catch (error) {
+        console.error('Error fetching analytics:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAnalytics();
+  }, []);
+
+  const handleViewAllActivity = () => {
+    if (onSectionChange) {
+      onSectionChange("history");
+    }
+  };
 
   const getColorClasses = (color) => {
     const colors = {
@@ -181,54 +238,94 @@ export default function Overview({ onSectionChange }) {
           Recent Activity
         </h2>
         <div className="space-y-4">
-          {recentActivity.map((item) => (
-            <div
-              key={item.id}
-              className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg"
-            >
-              <div className="flex items-center space-x-4">
-                <div className="flex-shrink-0">
-                  <div
-                    className={`${
-                      item.type === "call"
-                        ? "bg-blue-100 dark:bg-blue-900/30"
-                        : "bg-green-100 dark:bg-green-900/30"
-                    } p-2 rounded-lg`}
-                  >
-                    <FileText
-                      className={`h-4 w-4 ${
-                        item.type === "call"
-                          ? "text-blue-600"
-                          : "text-green-600"
-                      }`}
-                    />
+          {loading ? (
+            // Loading skeleton
+            <div className="space-y-4">
+              {[1, 2, 3].map((item) => (
+                <div
+                  key={item}
+                  className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg animate-pulse"
+                >
+                  <div className="flex items-center space-x-4">
+                    <div className="w-8 h-8 bg-gray-300 dark:bg-gray-600 rounded-lg"></div>
+                    <div>
+                      <div className="w-32 h-4 bg-gray-300 dark:bg-gray-600 rounded mb-2"></div>
+                      <div className="w-20 h-3 bg-gray-300 dark:bg-gray-600 rounded"></div>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-4 bg-gray-300 dark:bg-gray-600 rounded"></div>
+                    <div className="w-16 h-6 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
                   </div>
                 </div>
-                <div>
-                  <p className="font-medium text-gray-900 dark:text-white">
-                    {item.filename}
-                  </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {item.timestamp}
-                  </p>
+              ))}
+            </div>
+          ) : recentActivity.length > 0 ? (
+            recentActivity.map((item) => (
+              <div
+                key={item.id}
+                className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg"
+              >
+                <div className="flex items-center space-x-4">
+                  <div className="flex-shrink-0">
+                    <div
+                      className={`${
+                        item.type === "call"
+                          ? "bg-blue-100 dark:bg-blue-900/30"
+                          : "bg-green-100 dark:bg-green-900/30"
+                      } p-2 rounded-lg`}
+                    >
+                      <FileText
+                        className={`h-4 w-4 ${
+                          item.type === "call"
+                            ? "text-blue-600"
+                            : "text-green-600"
+                        }`}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900 dark:text-white">
+                      {item.filename}
+                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {item.timestamp}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <span className="font-mono text-sm text-gray-600 dark:text-gray-400">
+                    {item.score}/10
+                  </span>
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                      item.status
+                    )}`}
+                  >
+                    {item.status}
+                  </span>
                 </div>
               </div>
-              <div className="flex items-center space-x-4">
-                <span className="font-mono text-sm text-gray-600 dark:text-gray-400">
-                  {item.score}/10
-                </span>
-                <span
-                  className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                    item.status
-                  )}`}
-                >
-                  {item.status}
-                </span>
-              </div>
+            ))
+          ) : (
+            <div className="text-center py-8">
+              <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-500 dark:text-gray-400">
+                No recent activity found. Start by scanning some content!
+              </p>
+              <button
+                onClick={() => onSectionChange && onSectionChange("new-scan")}
+                className="mt-4 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors"
+              >
+                Start New Scan
+              </button>
             </div>
-          ))}
+          )}
         </div>
-        <button className="w-full mt-4 text-center text-teal-600 hover:text-teal-700 font-medium text-sm">
+        <button 
+          onClick={handleViewAllActivity}
+          className="w-full mt-4 text-center text-teal-600 hover:text-teal-700 font-medium text-sm cursor-pointer"
+        >
           View All Activity
         </button>
       </div>

@@ -7,6 +7,7 @@ const {
   getAnalysisHistory,
   getAnalysisRecord,
   deleteAnalysisRecord,
+  getSpamCount,
 } = require("../controllers/historyController");
 
 const { analyzeEmailContent } = require("../controllers/emailController");
@@ -38,5 +39,7 @@ router.delete(
   checkForAuthentication("token"),
   deleteAnalysisRecord
 );
+//spam analytics
+router.get("/getspamcount",checkForAuthentication("token"),getSpamCount)
 
 module.exports = router;

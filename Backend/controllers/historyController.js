@@ -4,7 +4,6 @@ const { cloudinary } = require("../Config/cloudinary.js");
 // Get analysis history with pagination
 async function getAnalysisHistory(req, res) {
   try {
-    console.log("233feiwnfceowidncccccnodsnvoldnekn");
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
@@ -107,8 +106,98 @@ async function deleteAnalysisRecord(req, res) {
   }
 }
 
+// Get spam analytics/count
+async function getSpamCount(req, res) {
+  try {
+    const query = req.user ? { userId: req.user.userId } : {};
+
+    // Get total scans
+    const totalScans = await ScanRecord.countDocuments(query);
+
+    // Get spam detected (isSpam: true)
+    const spamDetected = await ScanRecord.countDocuments({
+      ...query,
+      'analysisResult.isSpam': true
+    });
+
+    // Get safe content (isSpam: false)
+    const safeContent = await ScanRecord.countDocuments({
+      ...query,
+      'analysisResult.isSpam': false
+    });
+
+    // Calculate success rate (safe content / total scans * 100)
+    const successRate = totalScans > 0 ? ((safeContent / totalScans) * 100).toFixed(1) : 0;
+
+    // Get recent activity (last 5 records)
+    const recentActivity = await ScanRecord.find(query)
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .select('type filename analysisResult.spamScore analysisResult.isSpam createdAt')
+      .lean();
+
+    // Format recent activity
+    const formattedActivity = recentActivity.map(record => {
+      const now = new Date();
+      const createdAt = new Date(record.createdAt);
+      const diffTime = Math.abs(now - createdAt);
+      const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      
+      let timestamp;
+      if (diffDays > 0) {
+        timestamp = `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+      } else if (diffHours > 0) {
+        timestamp = `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+      } else {
+        timestamp = 'Just now';
+      }
+
+      let status;
+      if (record.analysisResult.isSpam) {
+        status = 'spam';
+      } else if (record.analysisResult.spamScore > 5) {
+        status = 'suspicious';
+      } else {
+        status = 'safe';
+      }
+
+      return {
+        id: record._id,
+        type: record.type,
+        filename: record.filename,
+        score: parseFloat(record.analysisResult.spamScore.toFixed(1)),
+        status,
+        timestamp
+      };
+    });
+
+    return res.json({
+      success: true,
+      data: {
+        stats: {
+          totalScans,
+          spamDetected,
+          safeContent,
+          successRate: `${successRate}%`
+        },
+        recentActivity: formattedActivity
+      }
+    });
+
+  } catch (error) {
+    console.error("Spam count fetch error:", error);
+    return res.status(500).json({
+      success: false,
+      error: "Failed to fetch spam analytics",
+      message: error.message,
+    });
+  }
+}
+
 module.exports = {
   getAnalysisHistory,
   getAnalysisRecord,
   deleteAnalysisRecord,
+  getSpamCount,
 };

@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { Loader2 } from "lucide-react";
+import { API_ENDPOINTS } from "../../config/api.js";
 
 const OAuthCallback = () => {
   const { login } = useAuth();
@@ -18,7 +19,7 @@ const OAuthCallback = () => {
     } else {
       // Check cookies for token (since your backend sets httpOnly cookies)
       // The token should be automatically included in requests
-      fetch("http://localhost:5000/api/auth/verify", {
+      fetch(API_ENDPOINTS.AUTH.VERIFY, {
         method: "GET",
         credentials: "include",
       })

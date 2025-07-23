@@ -1,19 +1,23 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect } from "react";
 
-const ThemeContext = createContext(undefined);
+export const ThemeContext = createContext(undefined);
 
 export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState("light");
-
-  useEffect(() => {
+  // Initialize with saved theme or system preference
+  const [theme, setTheme] = useState(() => {
+    // Check localStorage first
     const savedTheme = localStorage.getItem("theme");
-    if (savedTheme) {
-      setTheme(savedTheme);
-    } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      setTheme("dark");
+    if (savedTheme && (savedTheme === "light" || savedTheme === "dark")) {
+      return savedTheme;
     }
-  }, []);
+    // Fall back to system preference
+    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  });
 
+  // Apply theme to document and save to localStorage
   useEffect(() => {
     const html = document.documentElement;
     html.classList.remove("light", "dark");
@@ -30,12 +34,4 @@ export function ThemeProvider({ children }) {
       {children}
     </ThemeContext.Provider>
   );
-}
-
-export function useTheme() {
-  const context = useContext(ThemeContext);
-  if (!context) {
-    throw new Error("useTheme must be used within a ThemeProvider");
-  }
-  return context;
 }

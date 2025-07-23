@@ -11,7 +11,7 @@ export default function Footer() {
             <div className="flex items-center space-x-2 mb-4">
               <Shield className="h-8 w-8 text-teal-600" />
               <span className="text-xl font-bold text-gray-900 dark:text-white">
-                SpamGuard
+                ScamRadar
               </span>
             </div>
             <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md">
@@ -131,8 +131,7 @@ export default function Footer() {
 
         <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
           <p className="text-center text-gray-500 dark:text-gray-400 text-sm">
-            © 2025 SpamGuard. All rights reserved. Built with ❤️ to keep you
-            safe.
+            © 2025 ScamRadar. All rights reserved.
           </p>
         </div>
       </div>
