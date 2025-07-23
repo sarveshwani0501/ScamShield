@@ -31,7 +31,6 @@ export default function Sidebar({
     { id: "overview", label: "Overview", icon: BarChart3 },
     { id: "new-scan", label: "New Scan", icon: Users },
     { id: "history", label: "Scan History", icon: History },
-    { id: "analytics", label: "Analytics", icon: TrendingUp },
     { id: "education", label: "Education Center", icon: BookOpen },
   ];
   const {setUser} = useAuth()

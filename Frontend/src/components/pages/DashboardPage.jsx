@@ -5,7 +5,6 @@ import Sidebar from "../dashboard/Sidebar";
 import Overview from "../dashboard/Overview";
 import NewScan from "../dashboard/NewScan";
 import ScanHistory from "../dashboard/ScanHistory";
-import Analytics from "../dashboard/Analytics";
 import EducationCenter from "../EducationCenter";
 import ScanResultsModal from "../ScanResultsModal";
 import axios from "axios";
@@ -124,8 +123,6 @@ export default function DashboardPage({ onPageChange }) {
         return <NewScan onAnalyze={handleAnalyze} isAnalyzing={isAnalyzing} />;
       case "history":
         return <ScanHistory />;
-      case "analytics":
-        return <Analytics />;
       case "education":
         return <EducationCenter />;
       default:

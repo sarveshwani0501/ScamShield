@@ -58,7 +58,7 @@ export default function ScanResultsModal({
       const timeout = setTimeout(() => {
         clearInterval(interval);
         setStage("error");
-      }, 180000);
+      }, 240000);
 
       return () => {
         clearInterval(interval);

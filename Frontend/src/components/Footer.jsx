@@ -1,5 +1,6 @@
 import React from "react";
 import { Shield, Twitter, Facebook, Instagram, Linkedin } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
@@ -53,36 +54,36 @@ export default function Footer() {
             </h3>
             <ul className="space-y-2">
               <li>
-                <a
-                  href="#"
+                <Link
+                  to="/privacy-policy"
                   className="text-gray-600 dark:text-gray-400 hover:text-teal-600 transition-colors"
                 >
                   Privacy Policy
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  to="/terms-of-service"
                   className="text-gray-600 dark:text-gray-400 hover:text-teal-600 transition-colors"
                 >
                   Terms of Service
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  to="/contact"
                   className="text-gray-600 dark:text-gray-400 hover:text-teal-600 transition-colors"
                 >
                   Contact Us
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  to="/education-center"
                   className="text-gray-600 dark:text-gray-400 hover:text-teal-600 transition-colors"
                 >
                   Blog
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -94,36 +95,20 @@ export default function Footer() {
             </h3>
             <ul className="space-y-2">
               <li>
-                <a
-                  href="#"
+                <Link
+                  to="/contact"
                   className="text-gray-600 dark:text-gray-400 hover:text-teal-600 transition-colors"
                 >
                   Help Center
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
-                  className="text-gray-600 dark:text-gray-400 hover:text-teal-600 transition-colors"
-                >
-                  API Documentation
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-600 dark:text-gray-400 hover:text-teal-600 transition-colors"
-                >
-                  Status Page
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
+                <Link
+                  to="/contact"
                   className="text-gray-600 dark:text-gray-400 hover:text-teal-600 transition-colors"
                 >
                   Report Spam
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

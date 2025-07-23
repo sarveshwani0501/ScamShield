@@ -426,7 +426,7 @@ function generateHTML(scanData) {
             <span class="logo">🛡️</span>
           </div>
           <div class="header-text">
-            <h1>SCAM SHIELD</h1>
+            <h1>SCAM RADAR</h1>
             <p>AI-Powered Call Analysis Report</p>
           </div>
         </div>
@@ -518,7 +518,7 @@ function generateHTML(scanData) {
         <!-- Footer -->
         <div class="footer">
           <span>Generated ${new Date().toLocaleString()}</span>
-          <span class="footer-center">Powered by ScamShield AI</span>
+          <span class="footer-center">Powered by ScamRadar</span>
           <span>Page 1</span>
         </div>
       </div>

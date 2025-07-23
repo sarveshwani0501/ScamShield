@@ -18,6 +18,8 @@ import SignupForm from "./components/auth/SignupForm.jsx";
 import About from "./components/pages/About.jsx";
 import ContactUs from "./components/pages/ContactUs.jsx";
 import AnalyticsPage from "./components/pages/AnalyticsPage.jsx";
+import PrivacyPolicy from "./components/pages/PrivacyPolicy.jsx";
+import TermsOfService from "./components/pages/TermsOfService.jsx";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import checkUserAuthLoader from "./AuthLoader.js";
@@ -31,6 +33,8 @@ const router = createBrowserRouter(
         <Route path="/analytics" element={<AnalyticsPage />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<ContactUs />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-of-service" element={<TermsOfService />} />
         <Route
           path="/dashboard"
           element={<DashboardPage />}
